@@ -40,18 +40,24 @@
 		// apply migration
 		else {
 			echo "<font color='green'>Applying</font>";
-			$sql = file_get_contents(dirname(__FILE__)."/migrations/{$file}");
+			$sqls = file_get_contents(dirname(__FILE__)."/migrations/{$file}");
 			
-			echo "<p><pre style='color:grey; '>{$sql}</pre>";
+			// run multiple queries separated by ;
+			$sqls = explode(';', $sqls);
+			$is_error = false;
 			
-			$res = mysql_query($sql);
-			if ($res===false) {
-				echo "<p><font color='red'>Cannot execute query: </font>" . mysql_error();
+			foreach ($sqls as $sql) {
+				if (empty($sql)) continue;
+				echo "<p><pre style='color:grey; '>{$sql}</pre>";
+				
+				$res = mysql_query($sql);
+				if ($res===false) {
+					echo "<p><font color='red'>Cannot execute query: </font>" . mysql_error();
+					$is_error = true;
+				}
 			}
-			else {
-				$log[$domain][$file] = time(); // save to log
-			}
 			
+			if (!$is_error) $log[$domain][$file] = time(); // save to log
 			
 		}
 		
