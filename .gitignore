@@ -1,3 +1,5 @@
 # skip migrations sqls, only track folder
 /migrations/
 !/migrations/readme
+db_connect.php
+

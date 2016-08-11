@@ -8,6 +8,9 @@
 	
 	echo "<h1>Migration Tool</h1>";
 	
+	// use your own file to connect to database
+	include dirname(__FILE__)."/db_connect.php";
+	
 	// parse log
 	try {
 		$log = json_decode(file_get_contents(dirname(__FILE__)."/migrations/log"), true);
@@ -28,15 +31,28 @@
 		if ($ext != 'sql') continue;
 
 		// check if migration already applied
-		echo "<li>Checking \"{$file}\"... ";
+		echo "<h3>Checking \"{$file}\"...</h3> ";
 		
 		if (isset($log[$domain][$file])) {
-			echo "<font color='orange'>Already applied</font>";
+			echo "<font color='orange'>Already applied</font> <small>on ".date('d/m/y H:i', $log[$domain][$file])."</small>";
 		}
 		
 		// apply migration
 		else {
-			$log[$domain][$file] = time(); // save to log
+			echo "<font color='green'>Applying</font>";
+			$sql = file_get_contents(dirname(__FILE__)."/migrations/{$file}");
+			
+			echo "<p><pre style='color:grey; '>{$sql}</pre>";
+			
+			$res = mysql_query($sql);
+			if ($res===false) {
+				echo "<p><font color='red'>Cannot execute query: </font>" . mysql_error();
+			}
+			else {
+				$log[$domain][$file] = time(); // save to log
+			}
+			
+			
 		}
 		
 		
