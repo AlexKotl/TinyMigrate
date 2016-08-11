@@ -6,6 +6,6 @@
 	#
 	#------------------------------------------------------	
 	
-	
+	if (file_exists(dirname(__FILE__).'/migrations')) mkdir(dirname(__FILE__).'/migrations', 0775);
 
 ?>
